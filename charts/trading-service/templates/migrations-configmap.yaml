@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-migrations
+data:
+  V1__create_orders_table.sql: |
+    DROP TABLE IF EXISTS orders CASCADE;
+
+    CREATE TABLE orders (
+        id SERIAL PRIMARY KEY,
+        symbol VARCHAR(10) NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        quantity INTEGER NOT NULL,
+        order_type VARCHAR(4) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
