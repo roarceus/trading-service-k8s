@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: roarceus/trading-service-eks
+  repository: roarceus/trading-service-k8s
   pullPolicy: IfNotPresent
   tag: "latest"
 
