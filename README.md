@@ -265,24 +265,31 @@ kubectl get pods -n default
 To deploy updates, choose one of the following methods:
 
 - **Using Helm:**
-
   ```sh
   helm upgrade trading-service ./charts/trading-service --namespace default
   ```
 
 - **Using kubectl:**
-
   ```sh
   kubectl rollout restart deployment trading-service-trading-service -n default
   ```
 
-- **Using Argo CD:**
-
+- **Using Argo CD (Manual Sync):**
   ```sh
   argocd app sync trading-service
   ```
 
-*These commands trigger a rolling update of the application with the latest configuration and Docker image.*
+#### Auto-Sync with Argo CD  
+Argo CD is configured to automatically sync changes from the Git repository to the cluster. Any update to the `trading-service` Helm chart in the repository will trigger an automatic deployment.
+
+- Argo CD monitors the repository:  
+  **`https://github.com/roarceus/trading-service-k8s.git`**
+- If changes are detected in the **`charts/trading-service`** directory, Argo CD will:  
+  1. Apply the new manifests automatically.
+  2. Prune any removed resources.
+  3. Self-heal any manual changes in the cluster.
+
+*These methods ensure that the latest configuration and Docker image are deployed.*
 
 ---
 
