@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "trading-service.fullname" . }}
+  labels:
+    app: {{ include "trading-service.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "trading-service.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "trading-service.name" . }}
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      initContainers:
+        - name: flyway-migration
+          image: flyway/flyway:8.5.11
+          command: [ "flyway" ]
+          args:
+            - "-url=jdbc:postgresql://{{ .Values.env.DB_HOST }}:{{ .Values.env.DB_PORT }}/{{ .Values.env.DB_NAME }}"
+            - "-user={{ .Values.env.DB_USER }}"
+            - "-password={{ .Values.env.DB_PASSWORD }}"
+            - "-locations=filesystem:/flyway/migrations"
+            - "migrate"
+          volumeMounts:
+            - name: flyway-migrations
+              mountPath: /flyway/migrations
+      containers:
+        - name: trading-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: "{{ .Values.env.DB_HOST }}"
+            - name: DB_PORT
+              value: "{{ .Values.env.DB_PORT }}"
+            - name: DB_USER
+              value: "{{ .Values.env.DB_USER }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.env.DB_PASSWORD }}"
+            - name: DB_NAME
+              value: "{{ .Values.env.DB_NAME }}"
+      volumes:
+        - name: flyway-migrations
+          configMap:
+            name: flyway-migrations
