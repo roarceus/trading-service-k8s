@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/roarceus/trding-service-k8s.git'
+    repoURL: 'https://github.com/roarceus/trading-service-k8s.git'
     targetRevision: HEAD
     path: charts/trading-service
   destination:
